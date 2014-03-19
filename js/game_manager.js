@@ -42,6 +42,8 @@ GameManager.prototype.restart = function () {
 GameManager.prototype.keepPlaying = function () {
   this.keepPlaying = true;
   this.actuator.continue();
+  this.actuator.setRunButton('Auto-run');
+  this.actuate();
 };
 
 GameManager.prototype.isGameTerminated = function () {
@@ -85,7 +87,7 @@ GameManager.prototype.move = function(direction) {
   var result = this.grid.move(direction);
   this.score += result.score;
 
-  if (!result.won) {
+  if (this.keepPlaying || !result.won) {
     if (result.moved) {
       this.grid.computerMove();
     }
@@ -107,7 +109,7 @@ GameManager.prototype.run = function() {
   var best = this.ai.getBest();
   this.move(best.move);
   var timeout = animationDelay;
-  if (this.running && !this.over && !this.won) {
+  if (this.running && !this.over && (this.keepPlaying || !this.won)) {
     var self = this;
     setTimeout(function(){
       self.run();
